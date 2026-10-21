@@ -1,23 +1,19 @@
-name: Unzip
-
-on:
-  push:
-    branches: [ main ]
-
+name: build
+on: [push, workflow_dispatch]
 jobs:
-  unzip:
-    runs-on: ubuntu-latest
-
+  build:
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Extract
-        run: unzip -o *.zip
-
-      - name: Commit extracted files
-        run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
-          git add .
-          git commit -m "Extract zip" || echo "Nothing to commit"
-          git push
+      - run: brew install xcodegen ldid && xcodegen
+      - run: |
+          xcodebuild -project TipaGet.xcodeproj -scheme TipaGet -configuration Release -sdk iphoneos -derivedDataPath build CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO build
+          mkdir Payload
+          cp -R build/Build/Products/Release-iphoneos/TipaGet.app Payload/
+          ldid -Sentitlements.plist Payload/TipaGet.app/TipaGet
+          zip -r TipaGet.tipa Payload
+      - uses: actions/upload-artifact@v4
+        with:
+          name: TipaGet
+          path: TipaGet.tipa
+          
