@@ -1,0 +1,20 @@
+name: TipaGet
+options:
+  deploymentTarget:
+    iOS: "15.0"
+packages:
+  ZIPFoundation:
+    url: https://github.com/weichsel/ZIPFoundation
+    from: 0.9.19
+targets:
+  TipaGet:
+    type: application
+    platform: iOS
+    sources: [Sources]
+    dependencies:
+      - package: ZIPFoundation
+    settings:
+      PRODUCT_BUNDLE_IDENTIFIER: com.vennlmao.tipaget
+      GENERATE_INFOPLIST_FILE: YES
+      INFOPLIST_KEY_UILaunchScreen_Generation: YES
+      IPHONEOS_DEPLOYMENT_TARGET: "15.0"
